@@ -1,0 +1,35 @@
+{
+  "name": "paulchyrilov/ImagesModule",
+  "description": "Zend 2 module with file transfer adapter for images service",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "module",
+    "zf2",
+    "images",
+    "files",
+    "upload"
+  ],
+  "authors": [
+    {
+      "name": "Paul Churilov",
+      "email": "paulchurilov@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.3",
+    "zendframework/zend-stdlib": ">=2.2",
+    "zendframework/zend-mvc": ">=2.2",
+    "zendframework/zend-servicemanager": ">=2.2",
+    "zendframework/zend-modulemanager": ">=2.2",
+    "zendframework/zend-console": ">=2.2",
+    "zendframework/zend-http": ">=2.2",
+    "zendframework/zend-validator": ">=2.2",
+    "zendframework/zend-file": ">=2.2"
+  },
+  "autoload": {
+    "psr-0": {
+      "Images\\": "src/"
+    }
+  }
+}
