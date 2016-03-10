@@ -5,12 +5,12 @@ Just an ZF module with custom adapter for file uploading. This adapter proxies f
 
 configuration example:
 
-#'imageService.client' => [
-#    'query' => [
-#    'apiKey' => '56e02264d9ac92.51031333'
-#    ],
-#    'host' => 'http://local.image-service'
-# ]
+'imageService.client' => [
+    'query' => [
+    'apiKey' => '56e02264d9ac92.51031333'
+    ],
+    'host' => 'http://local.image-service'
+ ]
 
 
 usage example:
