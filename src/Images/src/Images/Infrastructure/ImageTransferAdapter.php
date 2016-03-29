@@ -2,6 +2,7 @@
 namespace Images\Infrastructure;
 
 use Zend\File\Transfer\Adapter\Http as FileTransferAdapter;
+use Zend\File\Transfer\Exception;
 
 class ImageTransferAdapter extends FileTransferAdapter
 {
@@ -101,6 +102,84 @@ class ImageTransferAdapter extends FileTransferAdapter
         }
 
         return $result;
+    }
+
+    /**
+     * Returns found files based on internal file array and given files
+     *
+     * @param  string|array $files (Optional) Files to return
+     * @param  bool $names (Optional) Returns only names on true, else complete info
+     * @param  bool $noexception (Optional) Allows throwing an exception, otherwise returns an empty array
+     * @return array Found files
+     * @throws Exception\RuntimeException On false filename
+     */
+    protected function getFiles($files, $names = false, $noexception = false)
+    {
+        $check = array();
+
+        if (is_string($files)) {
+            $files = array($files);
+        }
+
+        if (is_array($files)) {
+            foreach ($files as $find) {
+                $found = array();
+                foreach ($this->files as $file => $content) {
+                    if (!isset($content['url'])) {
+                        continue;
+                    }
+
+                    if (($content['url'] === $find) && isset($content['multifiles'])) {
+                        foreach ($content['multifiles'] as $multifile) {
+                            $found[] = $multifile;
+                        }
+                        break;
+                    }
+
+                    if ($file === $find) {
+                        $found[] = $file;
+                        break;
+                    }
+
+                    if ($content['url'] === $find) {
+                        $found[] = $file;
+                        break;
+                    }
+                }
+
+                if (empty($found)) {
+                    if ($noexception !== false) {
+                        return array();
+                    }
+
+                    throw new Exception\RuntimeException(sprintf('The file transfer adapter can not find "%s"', $find));
+                }
+
+                foreach ($found as $checked) {
+                    $check[$checked] = $this->files[$checked];
+                }
+            }
+        }
+
+        if ($files === null) {
+            $check = $this->files;
+            $keys  = array_keys($check);
+            foreach ($keys as $key) {
+                if (isset($check[$key]['multifiles'])) {
+                    unset($check[$key]);
+                }
+            }
+        }
+
+        if ($names) {
+            $check = array_keys($check);
+        }
+
+        if(empty($check)) {
+            $check = parent::getFiles($files, $names, $noexception);
+        }
+
+        return  $check;
     }
 
 

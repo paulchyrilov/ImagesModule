@@ -4,6 +4,7 @@ namespace Images\Infrastructure\Http;
 use Images\Infrastructure\ClientInterface;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\Curl as CurlAdapter;
+use Zend\Http\Request;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\Stdlib\Parameters;
 
@@ -57,9 +58,9 @@ class Client implements ClientInterface
      */
     public function sendImage($filePath, $origFileName, $fileType = null, $params = [])
     {
-
-        $this->transport->setUri($this->buildUrl('/index/receive'));
-        $this->transport->getRequest()->setMethod('POST')
+        $request = new Request();
+        $request->setUri($this->buildUrl('/index/receive'))
+            ->setMethod('POST')
             ->setPost(new Parameters($params))
             ->setFiles(new Parameters([
                 [
@@ -69,6 +70,7 @@ class Client implements ClientInterface
                     'filename' => $origFileName,
                 ]
             ]));
+        $this->transport->setRequest($request);
 
         $response = $this->transport->send();
 
@@ -81,11 +83,13 @@ class Client implements ClientInterface
 
     public function removeImage($url)
     {
-        $this->transport->setUri($this->buildUrl('/index/remove'));
-        $this->transport->getRequest()->setMethod('GET');
-        $query = $this->transport->getRequest()->getQuery();
+        $request = new Request();
+        $request->setUri($this->buildUrl('/index/remove'))
+            ->setMethod('GET');
+        $query = $request->getQuery();
         $query['url'] = $url;
-        $this->transport->getRequest()->setQuery($query);
+        $request->setQuery($query);
+        $this->transport->setRequest($request);
 
         $response = $this->transport->send();
 
