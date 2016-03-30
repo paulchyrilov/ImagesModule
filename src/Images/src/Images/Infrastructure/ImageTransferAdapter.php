@@ -27,6 +27,8 @@ class ImageTransferAdapter extends FileTransferAdapter
 
     public function receive($files = null, $tag = null)
     {
+        $result = false;
+
         if (!$this->isValid($files)) {
             return false;
         }
@@ -57,20 +59,24 @@ class ImageTransferAdapter extends FileTransferAdapter
                     $this->messages += ['Can\'t process file ' . $content['name'] . ': ' . $response['message']];
                 }
                 $this->messages += ['Can\'t process file ' . $content['name']];
+                unset($this->files[$file]);
                 continue;
             }
 
             if(empty($response['result'])) {
                 $this->messages += ['Can\'t process file ' . $content['name'] . '. Result is empty'];
+                unset($this->files[$file]);
                 continue;
             }
 
             unlink($content['tmp_name']);
             $this->files[$file]['url'] = $response['result'];
             $this->files[$file]['received'] = true;
+            //At least one file has been received
+            $result = true;
         }
 
-        return true;
+        return $result;
     }
 
     public function getFileName($file = null, $path = true)
@@ -145,14 +151,6 @@ class ImageTransferAdapter extends FileTransferAdapter
                         $found[] = $file;
                         break;
                     }
-                }
-
-                if (empty($found)) {
-                    if ($noexception !== false) {
-                        return array();
-                    }
-
-                    throw new Exception\RuntimeException(sprintf('The file transfer adapter can not find "%s"', $find));
                 }
 
                 foreach ($found as $checked) {
