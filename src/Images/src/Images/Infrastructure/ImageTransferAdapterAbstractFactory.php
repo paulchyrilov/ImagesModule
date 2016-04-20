@@ -80,6 +80,12 @@ class ImageTransferAdapterAbstractFactory implements AbstractFactoryInterface
             $serviceName = array_pop($nameParts);
         }
 
+        $baseName = implode('.', $nameParts);
+
+        if($baseName !== $this->configKey) {
+            return false;
+        }
+
         return $serviceName;
     }
 
