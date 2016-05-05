@@ -5,6 +5,7 @@ use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Stdlib\ArrayUtils;
+use Zend\Validator\AbstractValidator;
 use Zend\Validator\File\Extension;
 use Zend\Validator\File\MimeType;
 use Zend\Validator\File\Size;
