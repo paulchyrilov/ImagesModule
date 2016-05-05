@@ -15,9 +15,11 @@ class ImageTransferAdapterAbstractFactory implements AbstractFactoryInterface
     private $config;
 
     private $defaults = [
-        'extensions' => ['jpg', 'jpeg', 'png', 'gif'],
-        'mimetypes'  => ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
-        'size'      => ['max' => '2MB']
+        'validators' => [
+            Extension::class => ['jpg', 'jpeg', 'png', 'gif'],
+            MimeType::class  => ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+            Size::class      => ['max' => '2MB']
+        ]
     ];
 
     /**
@@ -60,14 +62,16 @@ class ImageTransferAdapterAbstractFactory implements AbstractFactoryInterface
 
         $adapter = new ImageTransferAdapter($client, $serviceConfig);
 
-        $extensionValidator = new Extension($serviceConfig['extensions']);
-        $adapter->addValidator($extensionValidator, true);
-
-        $mimeTypeValidator = new MimeType($serviceConfig['mimetypes']);
-        $adapter->addValidator($mimeTypeValidator, true);
-
-        $sizeValidator = new Size($serviceConfig['size']);
-        $adapter->addValidator($sizeValidator, true);
+        foreach($serviceConfig['validators'] as $class => $options) {
+            if(!class_exists($class)) {
+                throw new ServiceNotCreatedException('Invalid validator class ' . $class);
+            }
+            $validator = new $class($options);
+            if(!$validator instanceof AbstractValidator) {
+                throw new ServiceNotCreatedException('Invalid validator class ' . $class);
+            }
+            $adapter->addValidator($validator);
+        }
 
         return $adapter;
     }
@@ -103,7 +107,7 @@ class ImageTransferAdapterAbstractFactory implements AbstractFactoryInterface
             return false;
         }
 
-        return array_merge($this->defaults, $config[$serviceConfigKey]);
+        return array_merge_recursive($this->defaults, $config[$serviceConfigKey]);
     }
 
     /**
