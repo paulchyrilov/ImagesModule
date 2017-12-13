@@ -108,7 +108,7 @@ class ImageTransferAdapterAbstractFactory implements AbstractFactoryInterface
             return false;
         }
 
-        return array_merge_recursive($this->defaults, $config[$serviceConfigKey]);
+        return ArrayUtils::merge($this->defaults, $config[$serviceConfigKey], true);
     }
 
     /**
